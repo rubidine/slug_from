@@ -1,0 +1,29 @@
+SlugFrom
+========
+
+Build friendly URLs for finding your models, based on specified field.
+This doesn't alias_method_chain, but uses an ActiveRecord callback to watch
+for a change on the field.
+
+
+Example
+=======
+
+class MyBlogPost < ActiveRecord::Base
+  slug_from :title
+end
+
+p = MyBlogPost.new :title => 'First Post'
+p.valid? # to fire the callback
+p.slug         # => 'first-post'
+p.to_param     # => 'first-post'
+
+You can specify :slug_field if it has a diffrent name.
+
+slug_from :title, :slug_field => :happy_url
+
+You can use an ActiveRecord callback other than before_validation.
+
+slug_from :title, :callback => :before_create
+
+Copyright (c) 2009 Todd Willey <todd@rubidine.com>, released under the MIT license
