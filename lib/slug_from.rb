@@ -27,11 +27,25 @@ module SlugFrom
   module ClassMethods
     def slug_from field, options = {}
       include InstanceMethods
+      extend InteriorClassMethods
       write_inheritable_attribute(:slug_from_field, field.to_s)
       options.symbolize_keys!
       callback = options.delete(:callback) || :before_validation
       write_inheritable_attribute(:slug_options, options)
       send callback, :set_slug
+    end
+  end
+
+  module InteriorClassMethods
+    def lookup slug_value
+      opts = read_inheritable_attribute(:slug_options)
+      slug_field = opts[:slug_field] || :slug
+      if rv = send("find_by_#{slug_field}", slug_value)
+        rv
+      else
+        raise ActiveRecord::RecordNotFound,
+              "Unable to find #{self.name} with #{slug_field} = #{slug_value}"
+      end
     end
   end
 
