@@ -37,10 +37,10 @@ module SlugFrom
   end
 
   module InteriorClassMethods
-    def lookup slug_value
+    def lookup slug_value, graceful=false
       opts = read_inheritable_attribute(:slug_options)
       slug_field = opts[:slug_field] || :slug
-      if rv = send("find_by_#{slug_field}", slug_value)
+      if rv = send("find_by_#{slug_field}", slug_value) or graceful
         rv
       else
         raise ActiveRecord::RecordNotFound,
